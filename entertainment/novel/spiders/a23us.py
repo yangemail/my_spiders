@@ -16,7 +16,7 @@ class A23usSpider(scrapy.Spider):
             novel_url = book.xpath('.//td[1]/a[2]/@href').extract()[0]
 
             # 获取文章简介: 需要 xpath
-            # summary_url = response.c('.//td[1]/a[1]').extract()[0]
+            # summary_url = response.xpath('.//td[1]/a[1]').extract()[0]
 
             item = NovelItem()
             # item['name'] = book.xpath('./td[1]/a[2]/text()').extract()[0]
