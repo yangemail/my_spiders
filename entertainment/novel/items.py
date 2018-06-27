@@ -10,11 +10,16 @@ import scrapy
 
 class NovelItem(scrapy.Item):
     # 小说编号
-    nameId = scrapy.Field()
+    novel_id = scrapy.Field()
     # 小说名字
-    book_name = scrapy.Field()
+    novel_name = scrapy.Field()
     # 作者
     author = scrapy.Field()
+    # 图片
+    picture = scrapy.Field()
+    # 内容简介
+    summary = scrapy.Field()
+
     # 小说地址
     chapters_url = scrapy.Field()
     # 状态
@@ -27,14 +32,22 @@ class NovelItem(scrapy.Item):
     last_update = scrapy.Field()
 
 
-class ContentItem(scrapy.Item):
-    # 小说编号
-    id_name = scrapy.Field()
+class ChapterItem(scrapy.Item):
+    # 小说编号（和上面的小说对应）
+    novel_id = scrapy.Field()
+    # 用于绑定章节顺序
+    sequence = scrapy.Field()
+    # 章节汉字
+    chapter_seq_chinese = scrapy.Field()
     # 章节名字
     chapter_name = scrapy.Field()
     # 章节内容
     chapter_content = scrapy.Field()
+
     # 章节地址
     chapter_url = scrapy.Field()
-    # 用于绑定章节顺序
-    sequence = scrapy.Field()
+    # 是否已经更新
+    is_update = scrapy.Field()
+    # 最后更新日期
+    last_updated_time = scrapy.Field()
+

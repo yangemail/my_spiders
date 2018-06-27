@@ -4,9 +4,27 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+from scrapy.exceptions import DropItem
+
+from entertainment.novel.items import NovelItem, ChapterItem
+from entertainment.novel.mongo_helper import MongoHelper
 
 
 class NovelPipeline(object):
+    collection_name = 'novel'
+
     def process_item(self, item, spider):
-        print('$$$$$$$$$')
-        return item
+        if isinstance(item, NovelItem):
+            is_exist = MongoHelper().check_is_exist(item['novel_name'], item['author'])
+            if is_exist:
+                print(u'已经存在了')
+                raise DropItem("Duplicate item found: %s" % item)
+            else:
+                MongoHelper().save_novel(item)
+                print(u'开始存小说标题')
+                return item
+
+        if isinstance(item, ChapterItem):
+            MongoHelper().save_chapter(item)
+            print(u'{} 存储完毕', item['chapter_name'])
+            return item
