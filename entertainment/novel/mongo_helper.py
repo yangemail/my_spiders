@@ -8,12 +8,12 @@ database = conn.get_database("entertainment")
 class MongoHelper:
 
     @classmethod
-    def check_is_exist(cls, novel_name, author):
-        return database['novels'].find_one({"novel_name": novel_name, "author": author})
+    def check_is_exist(cls, book_name, book_author):
+        return database['books'].find_one({"book_name": book_name, "book_author": book_author})
 
     @classmethod
     def save_novel(cls, item):
-        database['novels'].insert_one(dict(item))
+        database['books'].insert_one(dict(item))
 
     @classmethod
     def save_chapter(cls, item):

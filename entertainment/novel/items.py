@@ -35,19 +35,21 @@ class BookItem(scrapy.Item):
 class ChapterItem(scrapy.Item):
     # 小说编号（和上面的小说对应）
     book_id = scrapy.Field()
+    # 章节编号
+    chapter_id = scrapy.Field()
+    # 章节名字
+    chapter_name = scrapy.Field()
     # 用于绑定章节顺序
     chapter_sequence = scrapy.Field()
     # 章节汉字
     chapter_seq_chinese = scrapy.Field()
-    # 章节名字
-    chapter_name = scrapy.Field()
+
     # 章节内容
     chapter_content = scrapy.Field()
-
     # 章节地址
     chapter_url = scrapy.Field()
-    # 是否已经更新
-    chapter_is_update = scrapy.Field()
+    # 是否需要更新
+    chapter_is_update_required = scrapy.Field()
     # 最后更新日期
     chapter_last_update_time = scrapy.Field()
 

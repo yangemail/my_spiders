@@ -2,7 +2,7 @@
 import scrapy
 from bson import ObjectId
 
-from entertainment.novel.items import NovelItem, ChapterItem
+from entertainment.novel.items import BookItem, ChapterItem
 import uuid
 
 from entertainment.novel.mongo_helper import MongoHelper
@@ -46,7 +46,7 @@ class A23usSpider(scrapy.Spider):
     # 获取小说概要
     def parse_book_summary(self, response):
         self.logger.info('## Fetching book summary')
-        item = NovelItem()
+        item = BookItem()
         item['novel_name'] = response.css('h1::text').re(u'(.+) ')[0]
         # 第一行
         _1st_row = response.css('#at tr:nth-child(1)')
@@ -63,7 +63,6 @@ class A23usSpider(scrapy.Spider):
     # 获取全部章节
     def parse_book_chapters(self, response):
         self.logger.info('## Got successful response from {}'.format(response.url))
-        self.logger.info('## Fetching all chapters')
 
         sequence = 0
         allurls = response.xpath('//tr')
