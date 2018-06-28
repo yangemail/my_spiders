@@ -8,6 +8,12 @@
 #     https://doc.scrapy.org/en/latest/topics/settings.html
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
+MONGO_DB = 'entertainment'
+MONGO_BOOK_COLL = 'books'
+MONGO_CONTENT_COLL = 'chapters'
+
 FEED_EXPORT_ENCODING = 'utf-8'
 
 BOT_NAME = 'novel'
@@ -65,9 +71,9 @@ DOWNLOAD_DELAY = 2
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'novel.pipelines.NovelPipeline': 300,
-# }
+ITEM_PIPELINES = {
+   'novel.pipelines.NovelPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

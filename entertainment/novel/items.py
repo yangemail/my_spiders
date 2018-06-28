@@ -41,9 +41,11 @@ class ChapterItem(scrapy.Item):
     chapter_name = scrapy.Field()
     # 用于绑定章节顺序
     chapter_sequence = scrapy.Field()
-    # 章节汉字
+    # 章节序号汉字
     chapter_seq_chinese = scrapy.Field()
 
+    # 章节序号数字
+    chapter_seq_number = scrapy.Field()
     # 章节内容
     chapter_content = scrapy.Field()
     # 章节地址
@@ -52,4 +54,6 @@ class ChapterItem(scrapy.Item):
     chapter_is_update_required = scrapy.Field()
     # 最后更新日期
     chapter_last_update_time = scrapy.Field()
+    # 是否异常
+    chapter_is_error = scrapy.Field()
 

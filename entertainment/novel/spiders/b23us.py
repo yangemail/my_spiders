@@ -2,10 +2,9 @@
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
+from entertainment.date_utils import DateUtils
 from entertainment.novel.items import BookItem, ChapterItem
 import scrapy
-
-from datetime import datetime
 
 
 class B23usSpider(CrawlSpider):
@@ -20,38 +19,37 @@ class B23usSpider(CrawlSpider):
     )
 
     def parse_book_info(self, response):
-        # self.logger.info('## begin parse_book_info, response url={} ##', str(response.url))
+        if not response.body:
+            print(response.url + "已经被爬取过了，不解析Book")
+        else:
+            item = BookItem()
+            book_url = response.url
+            item['book_id'] = book_url[book_url.rfind('/') + 1:]
+            item['book_name'] = response.css('h1::text').re(r'(.+) ')[0].strip()
+            item['book_summary'] = response.css('#content dd > p:nth-of-type(2)::text').extract_first()
 
-        item = BookItem()
-        book_url = response.url
-        item['book_id'] = book_url[book_url.rfind('/') + 1:]
-        item['book_name'] = response.css('h1::text').re(r'(.+) ')[0].strip()
-        item['book_summary'] = response.css('#content dd > p:nth-of-type(2)::text').extract_first()
+            # 页面第一行
+            _1st_row = response.css('#at tr:nth-child(1)')
+            item['book_author'] = _1st_row.css('td:nth-of-type(2)::text').extract_first().strip()
+            item['book_category'] = _1st_row.css('td:nth-of-type(1) > a::text').extract_first()
+            item['book_serial_status'] = _1st_row.css('td:nth-of-type(3)::text').extract_first().strip()
+            # 页面第二行
+            _2nd_row = response.css('#at tr:nth-child(2)')
+            book_serial_wordcount = _2nd_row.css('td:nth-of-type(2)::text').re(r'(\d+)')[0]
+            item['book_serial_wordcount'] = int(book_serial_wordcount)
+            book_last_update_time = _2nd_row.css('td:nth-of-type(3)::text').extract_first().strip()
+            item['book_last_update_time'] = DateUtils.parsing_date(book_last_update_time)
+            # 获取章节列表
+            chapter_list_url = response.css('.btnlinks a.read::attr(href)').extract_first()
+            item['book_chapters_url'] = chapter_list_url
 
-        # 页面第一行
-        _1st_row = response.css('#at tr:nth-child(1)')
-        item['book_author'] = _1st_row.css('td:nth-of-type(2)::text').extract_first().strip()
-        item['book_category'] = _1st_row.css('td:nth-of-type(1) > a::text').extract_first()
-        item['book_serial_status'] = _1st_row.css('td:nth-of-type(3)::text').extract_first().strip()
-        # 页面第二行
-        _2nd_row = response.css('#at tr:nth-child(2)')
-        book_serial_wordcount = _2nd_row.css('td:nth-of-type(2)::text').re(r'(\d+)')[0]
-        item['book_serial_wordcount'] = int(book_serial_wordcount)
-        book_last_update_time = _2nd_row.css('td:nth-of-type(3)::text').extract_first().strip()
-        item['book_last_update_time'] = datetime.strptime(book_last_update_time, '%Y - %m - %d')
-        # 获取章节列表
-        chapter_list_url = response.css('.btnlinks a.read::attr(href)').extract_first()
-        item['book_chapters_url'] = chapter_list_url
-
-        yield item
+            yield item
 
         # 图书的章节列表页面
-        yield scrapy.Request(chapter_list_url, callback=self.parse_book_chapters, )
+        yield scrapy.Request(chapter_list_url, callback=self.parse_book_chapters,)
 
     # 获取全部章节
     def parse_book_chapters(self, response):
-        # self.logger.info('## begin parse_book_info, response url={} ##', response.url)
-
         sequence = 0
         chapters = response.css('table td.L > a')
         for chapter in chapters:
@@ -61,14 +59,14 @@ class B23usSpider(CrawlSpider):
             yield scrapy.Request(chapter_url, callback=self.parse_content,
                                  meta={'sequence': sequence})
 
-
             break
-
-
 
     # 获取文章内容
     def parse_content(self, response):
-        # self.logger.info('## begin parse_book_info, response url={} ##', response.url)
+        if not response.body:
+            print(response.url + "已经被爬取过了，跳过")
+            return
+
         chapter_name = response.css('h1::text').extract_first().strip()
 
         chapter_url = response.url
@@ -92,7 +90,5 @@ class B23usSpider(CrawlSpider):
 
 
 if __name__ == "__main__":
-    str = '2018 - 06 - 28'
-    from datetime import datetime
-    datetime_object = datetime.strptime(str, '%Y - %m - %d')
-    print(datetime_object)
+    text = '2018-06-28'
+    print(DateUtils.parsing_date(text))
